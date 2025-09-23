@@ -2,8 +2,11 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Bell, Search, Settings, User } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const DashboardHeader = () => {
+  const { user } = useAuth();
+
   return (
     <header className="bg-card border-b border-border px-6 py-4">
       <div className="flex items-center justify-between">
@@ -16,6 +19,11 @@ const DashboardHeader = () => {
           <Badge variant="outline" className="border-success text-success">
             Active Response
           </Badge>
+          {user?.role && (
+            <Badge variant="secondary" className="ml-2">
+              {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
+            </Badge>
+          )}
         </div>
 
         {/* Search and Actions */}

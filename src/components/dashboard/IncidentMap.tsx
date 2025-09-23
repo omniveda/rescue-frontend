@@ -1,38 +1,105 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MapPin, AlertTriangle, Users, Package } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const IncidentMap = () => {
-  const activeIncidents = [
-    {
-      id: 'INC-001',
-      type: 'Flood',
-      location: 'Downtown District',
-      priority: 'High',
-      status: 'Active',
-      responders: 12,
-      affected: 45
-    },
-    {
-      id: 'INC-002',
-      type: 'Building Collapse',
-      location: 'Industrial Zone',
-      priority: 'Critical',
-      status: 'Responding',
-      responders: 8,
-      affected: 12
-    },
-    {
-      id: 'INC-003',
-      type: 'Fire',
-      location: 'Residential Area',
-      priority: 'Medium',
-      status: 'Contained',
-      responders: 6,
-      affected: 23
+  const { user, token } = useAuth();
+  const [activeIncidents, setActiveIncidents] = useState([]);
+
+  useEffect(() => {
+    if (user?.role === 'admin' && token) {
+      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/incidents', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          console.log('Response status:', res.status);
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log('Fetched incidents:', data);
+          setActiveIncidents(data.map((incident, index) => ({
+            id: incident._id,
+            type: incident.type,
+            location: incident.location,
+            priority: incident.severity,
+            status: incident.status,
+            responders: incident.assignedTo ? 1 : 0, // Simplified
+            affected: 0 // Not available in model
+          })));
+        })
+        .catch(err => {
+          console.error('Error fetching incidents:', err);
+          // Fallback to fake data if error
+          setActiveIncidents([
+            {
+              id: 'INC-001',
+              type: 'Flood',
+              location: 'Downtown District',
+              priority: 'High',
+              status: 'Active',
+              responders: 12,
+              affected: 45
+            },
+            {
+              id: 'INC-002',
+              type: 'Building Collapse',
+              location: 'Industrial Zone',
+              priority: 'Critical',
+              status: 'Responding',
+              responders: 8,
+              affected: 12
+            },
+            {
+              id: 'INC-003',
+              type: 'Fire',
+              location: 'Residential Area',
+              priority: 'Medium',
+              status: 'Contained',
+              responders: 6,
+              affected: 23
+            }
+          ]);
+        });
+    } else {
+      // Fallback to fake data for non-admins
+      setActiveIncidents([
+        {
+          id: 'INC-001',
+          type: 'Flood',
+          location: 'Downtown District',
+          priority: 'High',
+          status: 'Active',
+          responders: 12,
+          affected: 45
+        },
+        {
+          id: 'INC-002',
+          type: 'Building Collapse',
+          location: 'Industrial Zone',
+          priority: 'Critical',
+          status: 'Responding',
+          responders: 8,
+          affected: 12
+        },
+        {
+          id: 'INC-003',
+          type: 'Fire',
+          location: 'Residential Area',
+          priority: 'Medium',
+          status: 'Contained',
+          responders: 6,
+          affected: 23
+        }
+      ]);
     }
-  ];
+  }, [user, token]);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {

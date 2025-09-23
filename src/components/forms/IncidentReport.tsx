@@ -27,7 +27,7 @@ const IncidentReport = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://rescue-backend-67i2.onrender.com/api/incident-reports', {
+      const response = await fetch('https://rescue-backend-67i2.onrender.com//api/incident-reports', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

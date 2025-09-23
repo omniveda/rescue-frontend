@@ -7,9 +7,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Package, MapPin, Send, Users } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ResourceRequest = () => {
   const { toast } = useToast();
+  const { token } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     resourceType: '',
     category: '',
@@ -25,13 +28,62 @@ const ResourceRequest = () => {
     alternativeContact: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Resource Request Submitted",
-      description: "Your resource request has been submitted and will be prioritized based on urgency and availability.",
-      variant: "default",
-    });
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch('https://rescue-backend-67i2.onrender.com//api/resource-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          ...formData,
+          peopleAffected: parseInt(formData.peopleAffected) || 0
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        toast({
+          title: "Resource Request Submitted",
+          description: "Your resource request has been submitted and will be prioritized based on urgency and availability.",
+          variant: "default",
+        });
+        // Reset form
+        setFormData({
+          resourceType: '',
+          category: '',
+          quantity: '',
+          urgency: '',
+          deliveryLocation: '',
+          contactName: '',
+          contactPhone: '',
+          organization: '',
+          peopleAffected: '',
+          specificItems: '',
+          justification: '',
+          alternativeContact: ''
+        });
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: data.message || "Failed to submit resource request. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Network Error",
+        description: "Unable to connect to the server. Please check your connection and try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resourceTypes = [
@@ -263,9 +315,13 @@ const ResourceRequest = () => {
               </p>
             </div>
 
-            <Button type="submit" className="w-full h-12 text-lg font-semibold bg-success hover:bg-success/90">
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-12 text-lg font-semibold bg-success hover:bg-success/90 disabled:opacity-50"
+            >
               <Send className="mr-2 h-5 w-5" />
-              Submit Resource Request
+              {isSubmitting ? 'Submitting...' : 'Submit Resource Request'}
             </Button>
           </div>
         </form>

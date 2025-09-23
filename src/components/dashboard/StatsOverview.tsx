@@ -1,39 +1,41 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  AlertTriangle, 
-  Users, 
-  Package, 
+import {
+  AlertTriangle,
+  Users,
+  Package,
   Shield,
   TrendingUp,
   TrendingDown,
   Minus
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const StatsOverview = () => {
-  const stats = [
+  const { user, token } = useAuth();
+  const [stats, setStats] = useState([
     {
       title: 'Active Incidents',
-      value: '12',
-      change: '+3',
-      trend: 'up',
+      value: '0',
+      change: '0',
+      trend: 'stable',
       icon: AlertTriangle,
       color: 'text-emergency',
       bgColor: 'bg-emergency/10'
     },
     {
-      title: 'People Rescued',
-      value: '847',
-      change: '+156',
-      trend: 'up',
+      title: 'Total Users',
+      value: '0',
+      change: '0',
+      trend: 'stable',
       icon: Users,
       color: 'text-success',
       bgColor: 'bg-success/10'
     },
     {
-      title: 'Resources Deployed',
-      value: '234',
+      title: 'Total Resources',
+      value: '0',
       change: '0',
       trend: 'stable',
       icon: Package,
@@ -42,14 +44,114 @@ const StatsOverview = () => {
     },
     {
       title: 'Active Volunteers',
-      value: '89',
-      change: '-12',
-      trend: 'down',
+      value: '0',
+      change: '0',
+      trend: 'stable',
       icon: Shield,
       color: 'text-primary',
       bgColor: 'bg-primary/10'
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    if (user?.role === 'admin' && token) {
+      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => {
+          console.log('Response status:', res.status);
+          if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+          }
+          return res.json();
+        })
+        .then(data => {
+          console.log('Fetched data:', data);
+          setStats([
+            {
+              title: 'Active Incidents',
+              value: data.activeIncidents.toString(),
+              change: '0', // You can calculate change if needed
+              trend: 'stable',
+              icon: AlertTriangle,
+              color: 'text-emergency',
+              bgColor: 'bg-emergency/10'
+            },
+            {
+              title: 'Total Users',
+              value: data.totalUsers.toString(),
+              change: '0',
+              trend: 'stable',
+              icon: Users,
+              color: 'text-success',
+              bgColor: 'bg-success/10'
+            },
+            {
+              title: 'Total Resources',
+              value: data.totalResources.toString(),
+              change: '0',
+              trend: 'stable',
+              icon: Package,
+              color: 'text-warning',
+              bgColor: 'bg-warning/10'
+            },
+            {
+              title: 'Active Volunteers',
+              value: data.activeVolunteers.toString(),
+              change: '0',
+              trend: 'stable',
+              icon: Shield,
+              color: 'text-primary',
+              bgColor: 'bg-primary/10'
+            }
+          ]);
+        })
+        .catch(err => {
+          console.error('Error fetching stats:', err);
+          // Fallback to fake data if error
+          setStats([
+            {
+              title: 'Active Incidents',
+              value: '12',
+              change: '+3',
+              trend: 'up',
+              icon: AlertTriangle,
+              color: 'text-emergency',
+              bgColor: 'bg-emergency/10'
+            },
+            {
+              title: 'Total Users',
+              value: '100',
+              change: '+10',
+              trend: 'up',
+              icon: Users,
+              color: 'text-success',
+              bgColor: 'bg-success/10'
+            },
+            {
+              title: 'Total Resources',
+              value: '50',
+              change: '+5',
+              trend: 'up',
+              icon: Package,
+              color: 'text-warning',
+              bgColor: 'bg-warning/10'
+            },
+            {
+              title: 'Active Volunteers',
+              value: '20',
+              change: '+2',
+              trend: 'up',
+              icon: Shield,
+              color: 'text-primary',
+              bgColor: 'bg-primary/10'
+            }
+          ]);
+        });
+    }
+  }, [user, token]);
 
   const getTrendIcon = (trend: string) => {
     switch (trend) {

@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Shield, 
-  Users, 
-  AlertTriangle, 
-  Package, 
+import {
+  Shield,
+  Users,
+  AlertTriangle,
+  Package,
   MessageSquare,
   BarChart3,
   Settings,
@@ -15,135 +15,155 @@ import {
   Heart,
   DollarSign
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const AdminPanel = () => {
+  const { user, token } = useAuth();
   const [activeModule, setActiveModule] = useState('overview');
-
-  const systemStats = [
+  const [systemStats, setSystemStats] = useState([
     {
       title: 'Active Users',
-      value: '2,847',
-      change: '+156',
-      trend: 'up',
+      value: '0',
+      change: '0',
+      trend: 'stable',
       icon: Users,
       color: 'text-primary'
     },
     {
       title: 'Open Incidents',
-      value: '23',
-      change: '+5',
-      trend: 'up',
+      value: '0',
+      change: '0',
+      trend: 'stable',
       icon: AlertTriangle,
       color: 'text-emergency'
     },
     {
       title: 'Resources Managed',
-      value: '1,234',
-      change: '+89',
-      trend: 'up',
+      value: '0',
+      change: '0',
+      trend: 'stable',
       icon: Package,
       color: 'text-success'
     },
     {
       title: 'Messages Processed',
-      value: '5,678',
-      change: '+234',
-      trend: 'up',
+      value: '0',
+      change: '0',
+      trend: 'stable',
       icon: MessageSquare,
       color: 'text-warning'
     }
-  ];
+  ]);
+  const [recentIncidents, setRecentIncidents] = useState([]);
+  const [userManagement, setUserManagement] = useState([]);
+  const [resourceInventory, setResourceInventory] = useState([]);
 
-  const recentIncidents = [
-    {
-      id: 'INC-024',
-      type: 'Building Collapse',
-      location: 'Industrial District',
-      priority: 'Critical',
-      status: 'Active',
-      assignedTeam: 'Rescue Team Alpha',
-      reportedAt: '2 hours ago'
-    },
-    {
-      id: 'INC-023',
-      type: 'Flood Warning',
-      location: 'Riverside Area',
-      priority: 'High',
-      status: 'Monitoring',
-      assignedTeam: 'Emergency Response Unit 2',
-      reportedAt: '4 hours ago'
-    },
-    {
-      id: 'INC-022',
-      type: 'Power Outage',
-      location: 'Downtown Core',
-      priority: 'Medium',
-      status: 'Resolved',
-      assignedTeam: 'Utility Coordination Team',
-      reportedAt: '6 hours ago'
-    }
-  ];
+  useEffect(() => {
+    if (user?.role === 'admin' && token) {
+      // Fetch stats
+      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/stats', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          setSystemStats([
+            {
+              title: 'Active Users',
+              value: data.totalUsers.toString(),
+              change: '0',
+              trend: 'stable',
+              icon: Users,
+              color: 'text-primary'
+            },
+            {
+              title: 'Open Incidents',
+              value: data.activeIncidents.toString(),
+              change: '0',
+              trend: 'stable',
+              icon: AlertTriangle,
+              color: 'text-emergency'
+            },
+            {
+              title: 'Resources Managed',
+              value: data.totalResources.toString(),
+              change: '0',
+              trend: 'stable',
+              icon: Package,
+              color: 'text-success'
+            },
+            {
+              title: 'Messages Processed',
+              value: '0', // Not available in backend
+              change: '0',
+              trend: 'stable',
+              icon: MessageSquare,
+              color: 'text-warning'
+            }
+          ]);
+        })
+        .catch(err => console.error('Error fetching stats:', err));
 
-  const userManagement = [
-    {
-      id: 'U-001',
-      name: 'Sarah Johnson',
-      email: 'sarah.j@rescue.gov',
-      role: 'Emergency Responder',
-      status: 'Active',
-      lastActive: '5 min ago',
-      permissions: ['Incident Management', 'Resource Allocation']
-    },
-    {
-      id: 'U-002',
-      name: 'Mike Rodriguez',
-      email: 'mike.r@volunteer.org',
-      role: 'Volunteer Coordinator',
-      status: 'Active',
-      lastActive: '12 min ago',
-      permissions: ['Volunteer Management', 'Task Assignment']
-    },
-    {
-      id: 'U-003',
-      name: 'Dr. Emily Chen',
-      email: 'emily.c@medical.center',
-      role: 'Medical Staff',
-      status: 'Offline',
-      lastActive: '2 hours ago',
-      permissions: ['Medical Response', 'Health Records']
-    }
-  ];
+      // Fetch incidents
+      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/incidents', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          setRecentIncidents(data.map(incident => ({
+            id: incident._id,
+            type: incident.type,
+            location: incident.location,
+            priority: incident.severity,
+            status: incident.status,
+            assignedTeam: incident.assignedTo ? 'Assigned' : 'Unassigned',
+            reportedAt: new Date(incident.createdAt).toLocaleString()
+          })));
+        })
+        .catch(err => console.error('Error fetching incidents:', err));
 
-  const resourceInventory = [
-    {
-      category: 'Medical Supplies',
-      items: 145,
-      critical: 12,
-      lowStock: 23,
-      status: 'Adequate'
-    },
-    {
-      category: 'Emergency Food',
-      items: 890,
-      critical: 45,
-      lowStock: 78,
-      status: 'Critical'
-    },
-    {
-      category: 'Shelter Materials',
-      items: 234,
-      critical: 8,
-      lowStock: 15,
-      status: 'Good'
-    },
-    {
-      category: 'Communication Equipment',
-      items: 67,
-      critical: 3,
-      lowStock: 8,
-      status: 'Adequate'
+      // Fetch users
+      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/users', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          setUserManagement(data.map(user => ({
+            id: user._id,
+            name: user.username,
+            email: user.email,
+            role: user.role,
+            status: 'Active', // Simplified
+            lastActive: new Date(user.createdAt).toLocaleString(),
+            permissions: [user.role]
+          })));
+        })
+        .catch(err => console.error('Error fetching users:', err));
+
+      // Fetch resources
+      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/resources', {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      })
+        .then(res => res.json())
+        .then(data => {
+          setResourceInventory(data.map(resource => ({
+            category: resource.resourceType,
+            items: parseInt(resource.quantity) || 1,
+            critical: resource.urgency === 'Critical - Life threatening' ? 1 : 0,
+            lowStock: resource.urgency === 'High - Within 4 hours' ? 1 : 0,
+            status: resource.status === 'pending' ? 'Critical' : resource.status === 'approved' ? 'Good' : 'Adequate'
+          })));
+        })
+        .catch(err => console.error('Error fetching resources:', err));
     }
-  ];
+  }, [user, token]);
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
