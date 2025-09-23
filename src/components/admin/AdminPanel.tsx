@@ -61,7 +61,7 @@ const AdminPanel = () => {
   useEffect(() => {
     if (user?.role === 'admin' && token) {
       // Fetch stats
-      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/stats', {
+      fetch('https://rescue-backend-67i2.onrender.com/api/dashboard/stats', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -106,7 +106,7 @@ const AdminPanel = () => {
         .catch(err => console.error('Error fetching stats:', err));
 
       // Fetch incidents
-      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/incidents', {
+      fetch('https://rescue-backend-67i2.onrender.com/api/dashboard/incidents', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -126,7 +126,7 @@ const AdminPanel = () => {
         .catch(err => console.error('Error fetching incidents:', err));
 
       // Fetch users
-      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/users', {
+      fetch('https://rescue-backend-67i2.onrender.com/api/dashboard/users', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -146,7 +146,7 @@ const AdminPanel = () => {
         .catch(err => console.error('Error fetching users:', err));
 
       // Fetch resources
-      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/resources', {
+      fetch('https://rescue-backend-67i2.onrender.com/api/dashboard/resources', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

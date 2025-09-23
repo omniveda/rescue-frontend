@@ -55,7 +55,7 @@ const StatsOverview = () => {
 
   useEffect(() => {
     if (user?.role === 'admin' && token) {
-      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/stats', {
+      fetch('https://rescue-backend-67i2.onrender.com/api/dashboard/stats', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

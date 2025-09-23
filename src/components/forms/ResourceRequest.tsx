@@ -33,7 +33,7 @@ const ResourceRequest = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('https://rescue-backend-67i2.onrender.com//api/resource-requests', {
+      const response = await fetch('https://rescue-backend-67i2.onrender.com/api/resource-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

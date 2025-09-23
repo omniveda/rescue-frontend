@@ -10,7 +10,7 @@ const IncidentMap = () => {
 
   useEffect(() => {
     if (user?.role === 'admin' && token) {
-      fetch('https://rescue-backend-67i2.onrender.com//api/dashboard/incidents', {
+      fetch('https://rescue-backend-67i2.onrender.com/api/dashboard/incidents', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

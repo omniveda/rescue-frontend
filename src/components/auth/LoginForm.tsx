@@ -47,7 +47,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
             password: formData.password
           };
 
-      const response = await fetch(`https://rescue-backend-67i2.onrender.com/${endpoint}`, {
+      const response = await fetch(`https://rescue-backend-67i2.onrender.com${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
