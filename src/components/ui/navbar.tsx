@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import logo from "@/assets/punjab_sewa_logo.jpg";
 import {
   Home,
   AlertTriangle,
@@ -50,15 +51,13 @@ const Navbar = () => {
   const navItems = isAuthenticated ? authenticatedNavItems : publicNavItems;
 
   return (
-    <nav className="bg-background border-b border-border sticky top-0 z-50">
+    <nav className="bg-[#ebeadf] border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo/Brand */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">RCN</span>
-            </div>
-            <span className="font-bold text-lg">RescueConnect Nexus</span>
+            <img src={logo} alt="" className='h-10 w-12' />
+            <span className="font-bold text-lg">Punjab Sewa</span>
           </Link>
 
           {/* Desktop Navigation */}
