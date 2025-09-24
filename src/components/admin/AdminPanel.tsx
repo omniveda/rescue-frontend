@@ -264,7 +264,47 @@ const AdminPanel = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* TODO: Fetch and display incident reports from backend */}
+              {recentIncidents.length === 0 ? (
+                <div className="text-center py-8">
+                  <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No incidents found</p>
+                  <p className="text-sm text-muted-foreground">Incidents will appear here when reported</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {recentIncidents.map((incident) => (
+                    <div key={incident.id} className="p-4 border border-border rounded-lg bg-background">
+                      <div className="flex items-start justify-between mb-3">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-semibold text-foreground">{incident.type}</h4>
+                            <Badge className={getPriorityColor(incident.priority)}>
+                              {incident.priority}
+                            </Badge>
+                            <Badge className={getStatusColor(incident.status)}>
+                              {incident.status}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground mb-1">
+                            <strong>Location:</strong> {incident.location}
+                          </p>
+                          <p className="text-sm text-muted-foreground mb-1">
+                            <strong>Assigned Team:</strong> {incident.assignedTeam}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Reported:</strong> {incident.reportedAt}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" variant="outline">View Details</Button>
+                          <Button size="sm" variant="outline">Assign Team</Button>
+                          <Button size="sm" variant="outline">Update Status</Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

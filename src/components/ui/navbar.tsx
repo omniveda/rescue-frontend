@@ -19,6 +19,7 @@ import {
 import { useState } from 'react';
 
 const Navbar = () => {
+  const { user } = useAuth();
   const location = useLocation();
   const { isAuthenticated, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
@@ -35,6 +36,11 @@ const Navbar = () => {
     { path: '/login', label: 'Login', icon: LogIn },
   ];
 
+  const adminNavItems = [
+    { path: '/admin', label: 'Admin', icon: Shield },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+  ];
+
   const authenticatedNavItems = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/dashboard', label: 'Dashboard', icon: Home },
@@ -45,10 +51,16 @@ const Navbar = () => {
     { path: '/volunteer', label: 'Volunteer', icon: Users },
     { path: '/support', label: 'Support', icon: Heart },
     { path: '/donate', label: 'Donate', icon: DollarSign },
-    { path: '/admin', label: 'Admin', icon: Shield },
   ];
 
-  const navItems = isAuthenticated ? authenticatedNavItems : publicNavItems;
+  // Determine navigation items based on user role
+  const getNavItems = () => {
+    if (!isAuthenticated) return publicNavItems;
+    if (user?.role === 'admin') return adminNavItems;
+    return authenticatedNavItems;
+  };
+
+  const navItems = getNavItems();
 
   return (
     <nav className="bg-[#ebeadf] border-b border-border sticky top-0 z-50">
