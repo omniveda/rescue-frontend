@@ -83,7 +83,6 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
     'citizen',
     'volunteer',
     'emergency_responder',
-    'admin',
     'medical_staff',
     'logistics_coordinator'
   ];

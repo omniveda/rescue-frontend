@@ -25,7 +25,6 @@ const Navbar = () => {
 
   const publicNavItems = [
     { path: '/', label: 'Home', icon: Home },
-    { path: '/login', label: 'Login', icon: LogIn },
     { path: '/report', label: 'Report Incident', icon: AlertTriangle },
     { path: '/missing', label: 'Missing Persons', icon: Users },
     { path: '/damage', label: 'Damage Report', icon: AlertTriangle },
@@ -33,6 +32,7 @@ const Navbar = () => {
     { path: '/volunteer', label: 'Volunteer', icon: Users },
     { path: '/support', label: 'Support', icon: Heart },
     { path: '/donate', label: 'Donate', icon: DollarSign },
+    { path: '/login', label: 'Login', icon: LogIn },
   ];
 
   const authenticatedNavItems = [
