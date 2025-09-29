@@ -41,23 +41,90 @@ const Navbar = () => {
     { path: '/dashboard', label: 'Dashboard', icon: Home },
   ];
 
-  const authenticatedNavItems = [
+  const volunteerNavItems = [
+    { path: '/volunteer', label: 'Volunteer Dashboard', icon: Users },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+    { path: '/report', label: 'Report Incident', icon: AlertTriangle },
+  ];
+
+  const citizenNavItems = [
     { path: '/', label: 'Home', icon: Home },
     { path: '/dashboard', label: 'Dashboard', icon: Home },
     { path: '/report', label: 'Report Incident', icon: AlertTriangle },
     { path: '/missing', label: 'Missing Persons', icon: Users },
     { path: '/damage', label: 'Damage Report', icon: AlertTriangle },
     { path: '/resources', label: 'Resources', icon: Package },
-    { path: '/volunteer', label: 'Volunteer', icon: Users },
     { path: '/support', label: 'Support', icon: Heart },
     { path: '/donate', label: 'Donate', icon: DollarSign },
+  ];
+
+  const counselorNavItems = [
+    { path: '/counselor', label: 'Counselor Dashboard', icon: Heart },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+    { path: '/support', label: 'Support Requests', icon: Heart },
+  ];
+
+  const donorNavItems = [
+    { path: '/donor', label: 'Donor Dashboard', icon: DollarSign },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+    { path: '/donate', label: 'Make Donation', icon: DollarSign },
+  ];
+
+  const auditorNavItems = [
+    { path: '/auditor', label: 'System Audit', icon: Shield },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+  ];
+
+  const incidentManagerNavItems = [
+    { path: '/incident-manager', label: 'Incident Management', icon: AlertTriangle },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+    { path: '/report', label: 'Report Incident', icon: AlertTriangle },
+  ];
+
+  const resourceManagerNavItems = [
+    { path: '/resource-manager', label: 'Resource Management', icon: Package },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+    { path: '/resources', label: 'Request Resources', icon: Package },
+  ];
+
+  const shelterManagerNavItems = [
+    { path: '/shelter-manager', label: 'Shelter Management', icon: Home },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
+  ];
+
+  const communicationOfficerNavItems = [
+    { path: '/communication-officer', label: 'Communication Hub', icon: Users },
+    { path: '/dashboard', label: 'Dashboard', icon: Home },
   ];
 
   // Determine navigation items based on user role
   const getNavItems = () => {
     if (!isAuthenticated) return publicNavItems;
-    if (user?.role === 'admin') return adminNavItems;
-    return authenticatedNavItems;
+
+    switch (user?.role) {
+      case 'admin':
+        return adminNavItems;
+      case 'volunteer':
+        return volunteerNavItems;
+      case 'citizen':
+        return citizenNavItems;
+      case 'mental_health_counselor':
+        return counselorNavItems;
+      case 'donor':
+        return donorNavItems;
+      case 'system_auditor':
+        return auditorNavItems;
+      case 'incident_manager':
+        return incidentManagerNavItems;
+      case 'logistics_coordinator':
+        return resourceManagerNavItems;
+      case 'shelter_manager':
+        return shelterManagerNavItems;
+      case 'communication_officer':
+        return communicationOfficerNavItems;
+      default:
+        return citizenNavItems; // Default to citizen navigation
+    }
   };
 
   const navItems = getNavItems();

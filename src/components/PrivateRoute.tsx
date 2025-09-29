@@ -4,17 +4,24 @@ import { useAuth } from '@/contexts/AuthContext';
 
 interface PrivateRouteProps {
   children: React.ReactNode;
-  adminOnly?: boolean;
+  allowedRoles?: string[];
+  adminOnly?: boolean; // Keep for backward compatibility
 }
 
-const PrivateRoute = ({ children, adminOnly = false }: PrivateRouteProps) => {
+const PrivateRoute = ({ children, allowedRoles, adminOnly = false }: PrivateRouteProps) => {
   const { isAuthenticated, user } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 
+  // Backward compatibility for adminOnly
   if (adminOnly && user?.role !== 'admin') {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // Check allowed roles if specified
+  if (allowedRoles && !allowedRoles.includes(user?.role || '')) {
     return <Navigate to="/dashboard" replace />;
   }
 

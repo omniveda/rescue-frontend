@@ -17,6 +17,13 @@ import VolunteerPage from "./pages/VolunteerPage";
 import SupportPage from "./pages/SupportPage";
 import DonatePage from "./pages/DonatePage";
 import AdminPage from "./pages/AdminPage";
+import CounselorPage from "./pages/CounselorPage";
+import DonorPage from "./pages/DonorPage";
+import AuditorPage from "./pages/AuditorPage";
+import IncidentManagerPage from "./pages/IncidentManagerPage";
+import ResourceManagerPage from "./pages/ResourceManagerPage";
+// import ShelterManagerPage from "./pages/ShelterManagerPage";
+// import CommunicationOfficerPage from "./pages/CommunicationOfficerPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -104,6 +111,62 @@ const App = () => (
                 </PrivateRoute>
               }
             />
+            <Route
+              path="/counselor"
+              element={
+                <PrivateRoute allowedRoles={['mental_health_counselor']}>
+                  <CounselorPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/donor"
+              element={
+                <PrivateRoute allowedRoles={['donor']}>
+                  <DonorPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/auditor"
+              element={
+                <PrivateRoute allowedRoles={['system_auditor']}>
+                  <AuditorPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/incident-manager"
+              element={
+                <PrivateRoute allowedRoles={['incident_manager']}>
+                  <IncidentManagerPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/resource-manager"
+              element={
+                <PrivateRoute allowedRoles={['logistics_coordinator']}>
+                  <ResourceManagerPage />
+                </PrivateRoute>
+              }
+            />
+            {/* <Route
+              path="/shelter-manager"
+              element={
+                <PrivateRoute allowedRoles={['shelter_manager']}>
+                  <ShelterManagerPage />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/communication-officer"
+              element={
+                <PrivateRoute allowedRoles={['communication_officer']}>
+                  <CommunicationOfficerPage />
+                </PrivateRoute>
+              }
+            /> */}
             {/* Catch-all route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
