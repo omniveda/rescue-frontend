@@ -27,7 +27,7 @@ const Hero = () => {
 
           {/* Main Heading */}
           <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            RescueConnect
+            Punjab Sewa
             <span className="block text-3xl md:text-4xl font-normal text-white/90 mt-4">
               Coordinating Crisis Response
             </span>

@@ -61,7 +61,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
         onLogin(data.user, data.token);
         toast({
           title: isSignUp ? "Account Created Successfully" : "Login Successful",
-          description: `Welcome to RescueConnect, ${data.user.username}!`,
+          description: `Welcome to Punjab Sewa, ${data.user.username}!`,
         });
       } else {
         toast({
@@ -95,7 +95,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
             <div className="w-10 h-10 bg-gradient-to-br from-primary to-success rounded-xl flex items-center justify-center">
               <Shield className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold">RescueConnect</h1>
+            <h1 className="text-2xl font-bold">Punjab Sewa</h1>
           </div>
           <CardTitle className="text-xl">
             {isSignUp ? 'Create Account' : 'Sign In'}
