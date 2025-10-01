@@ -43,7 +43,7 @@ const Navbar = () => {
 
   const volunteerNavItems = [
     { path: '/volunteer', label: 'Volunteer Dashboard', icon: Users },
-    { path: '/dashboard', label: 'Dashboard', icon: Home },
+    // { path: '/dashboard', label: 'Dashboard', icon: Home },
     { path: '/report', label: 'Report Incident', icon: AlertTriangle },
     { path: '/missing', label: 'Missing Persons', icon: Users },
     { path: '/damage', label: 'Damage Report', icon: AlertTriangle },

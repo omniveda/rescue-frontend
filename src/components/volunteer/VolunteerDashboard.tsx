@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -25,73 +25,133 @@ import {
   Edit,
   Plus
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 const VolunteerDashboard = () => {
-  const volunteerTasks = [
-    {
-      id: 'VT-001',
-      title: 'Search & Rescue Support',
-      location: 'Downtown District - Sector 3',
-      priority: 'High',
-      status: 'Assigned',
-      startTime: '09:00 AM',
-      estimatedDuration: '4 hours',
-      teamLead: 'Sarah Johnson',
-      teamSize: 8,
-      skills: ['First Aid', 'Navigation']
-    },
-    {
-      id: 'VT-002',
-      title: 'Supply Distribution',
-      location: 'Community Center - West Side',
-      priority: 'Medium',
-      status: 'In Progress',
-      startTime: '02:00 PM',
-      estimatedDuration: '3 hours',
-      teamLead: 'Mike Rodriguez',
-      teamSize: 6,
-      skills: ['Logistics', 'Communication']
-    },
-    {
-      id: 'VT-003',
-      title: 'Medical Assistance',
-      location: 'Emergency Shelter A',
-      priority: 'Critical',
-      status: 'Pending',
-      startTime: '06:00 PM',
-      estimatedDuration: '6 hours',
-      teamLead: 'Dr. Emily Chen',
-      teamSize: 4,
-      skills: ['Medical Training', 'CPR']
-    }
-  ];
-
-  const volunteerStats = [
+  const { user, token } = useAuth();
+  const [volunteerTasks, setVolunteerTasks] = useState([]);
+  const [volunteerStats, setVolunteerStats] = useState([
     {
       title: 'Active Tasks',
-      value: '2',
+      value: '0',
       icon: Clock,
       color: 'text-warning'
     },
     {
       title: 'Completed Today',
-      value: '1',
+      value: '0',
       icon: CheckCircle,
       color: 'text-success'
     },
     {
       title: 'Hours Contributed',
-      value: '12',
+      value: '0',
       icon: Users,
       color: 'text-primary'
     },
     {
       title: 'Team Members',
-      value: '18',
+      value: '0',
       icon: Users,
       color: 'text-primary'
     }
-  ];
+  ]);
+  const [profileData, setProfileData] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    skills: [],
+    availability: '',
+    emergencyContact: ''
+  });
+  const [shelterData, setShelterData] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [incidents, setIncidents] = useState([]);
+
+  useEffect(() => {
+    if (user?.role === 'volunteer' && token) {
+      fetchData();
+    }
+  }, [user, token]);
+
+  const fetchData = async () => {
+    try {
+      const [tasksRes, statsRes, profileRes, shelterRes, messagesRes, incidentsRes] = await Promise.all([
+        fetch('https://rescue-backend-67i2.onrender.com/api/volunteer/tasks', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('https://rescue-backend-67i2.onrender.com/api/volunteer/stats', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('https://rescue-backend-67i2.onrender.com/api/volunteer/profile', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('https://rescue-backend-67i2.onrender.com/api/volunteer/shelter', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('https://rescue-backend-67i2.onrender.com/api/volunteer/messages', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        }),
+        fetch('https://rescue-backend-67i2.onrender.com/api/dashboard/incidents', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+      ]);
+
+      const tasks = await tasksRes.json();
+      const stats = await statsRes.json();
+      const profile = await profileRes.json();
+      const shelter = await shelterRes.json();
+      const msgs = await messagesRes.json();
+      const incidents = await incidentsRes.json();
+      console.log('Fetched incidents:', incidents);
+
+      setVolunteerTasks(tasks);
+      setVolunteerStats([
+        {
+          title: 'Active Tasks',
+          value: stats.activeTasks.toString(),
+          icon: Clock,
+          color: 'text-warning'
+        },
+        {
+          title: 'Completed Today',
+          value: stats.completedToday.toString(),
+          icon: CheckCircle,
+          color: 'text-success'
+        },
+        {
+          title: 'Hours Contributed',
+          value: stats.hoursContributed.toString(),
+          icon: Users,
+          color: 'text-primary'
+        },
+        {
+          title: 'Team Members',
+          value: stats.teamMembers.toString(),
+          icon: Users,
+          color: 'text-primary'
+        }
+      ]);
+      setProfileData({
+        fullName: profile.username || '',
+        phone: profile.phone || '',
+        email: profile.email || '',
+        skills: profile.skills || [],
+        availability: profile.availability || '',
+        emergencyContact: profile.emergencyContact || ''
+      });
+      setShelterData(shelter);
+      setMessages(msgs);
+      setIncidents(incidents);
+    } catch (err) {
+      console.error('Error fetching volunteer data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -120,15 +180,6 @@ const VolunteerDashboard = () => {
   };
 
   const [activeTab, setActiveTab] = useState('overview');
-  const [profileData, setProfileData] = useState({
-    fullName: 'John Doe',
-    phone: '+1-555-0123',
-    email: 'john.doe@example.com',
-    skills: ['First Aid', 'Communication', 'Logistics'],
-    availability: 'Full Time',
-    emergencyContact: '+1-555-0987'
-  });
-
   const [incidentReport, setIncidentReport] = useState({
     type: '',
     location: '',
@@ -136,32 +187,6 @@ const VolunteerDashboard = () => {
     severity: '',
     mediaFiles: []
   });
-
-  const [shelterData, setShelterData] = useState({
-    shelterId: '',
-    currentOccupancy: 0,
-    maxCapacity: 100,
-    notes: ''
-  });
-
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      from: 'Admin Team',
-      subject: 'Task Assignment Update',
-      message: 'Your medical assistance task has been confirmed for tonight.',
-      timestamp: '2 hours ago',
-      read: false
-    },
-    {
-      id: 2,
-      from: 'Sarah Johnson (Team Lead)',
-      subject: 'Equipment Check',
-      message: 'Please ensure you have all required medical supplies before shift.',
-      timestamp: '4 hours ago',
-      read: true
-    }
-  ]);
 
   return (
     <div className="space-y-6">
@@ -224,32 +249,69 @@ const VolunteerDashboard = () => {
             ))}
           </div>
 
-          {/* Quick Actions */}
-          <Card className="border-0 shadow-soft">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Button className="h-16 flex-col gap-2">
-                  <CheckCircle className="h-5 w-5" />
-                  Check In
-                </Button>
-                <Button variant="outline" className="h-16 flex-col gap-2">
-                  <MessageSquare className="h-5 w-5" />
-                  Team Chat
-                </Button>
-                <Button variant="outline" className="h-16 flex-col gap-2">
-                  <Phone className="h-5 w-5" />
-                  Emergency Contact
-                </Button>
-                <Button variant="outline" className="h-16 flex-col gap-2">
-                  <MapPin className="h-5 w-5" />
-                  Navigation
-                </Button>
+      {/* Quick Actions */}
+      <Card className="border-0 shadow-soft">
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Button className="h-16 flex-col gap-2">
+              <CheckCircle className="h-5 w-5" />
+              Check In
+            </Button>
+            <Button variant="outline" className="h-16 flex-col gap-2">
+              <MessageSquare className="h-5 w-5" />
+              Team Chat
+            </Button>
+            <Button variant="outline" className="h-16 flex-col gap-2">
+              <Phone className="h-5 w-5" />
+              Emergency Contact
+            </Button>
+            <Button variant="outline" className="h-16 flex-col gap-2">
+              <MapPin className="h-5 w-5" />
+              Navigation
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Incidents Section */}
+      <Card className="border-0 shadow-soft">
+        <CardHeader>
+          <CardTitle>Recent Incidents</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {incidents.length === 0 ? (
+            <p className="text-muted-foreground">No recent incidents.</p>
+          ) : (
+            incidents.map((incident) => (
+              <div key={incident._id} className="p-4 border border-border rounded-lg bg-background mb-4">
+                <div className="flex items-start justify-between mb-2">
+                  <div>
+                    <h4 className="font-semibold text-foreground">{incident.type}</h4>
+                    <p className="text-sm text-muted-foreground">{incident.location}</p>
+                  </div>
+                  <Badge className={getPriorityColor(incident.severity)}>
+                    {incident.severity}
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mb-2">{incident.description}</p>
+                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    <span>{incident.assignedTo ? incident.assignedTo.length : 0} responders</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" />
+                    <span>{incident.affected || 0} affected</span>
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            ))
+          )}
+        </CardContent>
+      </Card>
 
           {/* Today's Schedule */}
           <Card className="border-0 shadow-soft">
@@ -548,89 +610,38 @@ const VolunteerDashboard = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Home className="h-5 w-5 text-primary" />
-                Shelter Occupancy Management
+                Shelter Information
               </CardTitle>
-              <p className="text-sm text-muted-foreground">Update and monitor shelter capacity and occupancy</p>
+              <p className="text-sm text-muted-foreground">View available shelters and their details</p>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label htmlFor="shelterId">Shelter Location</Label>
-                    <Select value={shelterData.shelterId} onValueChange={(value) => setShelterData({...shelterData, shelterId: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select shelter" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="shelter-a">Emergency Shelter A</SelectItem>
-                        <SelectItem value="shelter-b">Community Center B</SelectItem>
-                        <SelectItem value="shelter-c">School Gym C</SelectItem>
-                        <SelectItem value="shelter-d">Church Hall D</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="currentOccupancy">Current Occupancy</Label>
-                    <Input
-                      id="currentOccupancy"
-                      type="number"
-                      value={shelterData.currentOccupancy}
-                      onChange={(e) => setShelterData({...shelterData, currentOccupancy: parseInt(e.target.value)})}
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="maxCapacity">Maximum Capacity</Label>
-                    <Input
-                      id="maxCapacity"
-                      type="number"
-                      value={shelterData.maxCapacity}
-                      onChange={(e) => setShelterData({...shelterData, maxCapacity: parseInt(e.target.value)})}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <Label>Occupancy Status</Label>
-                    <div className="p-4 bg-muted rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-sm font-medium">Current Usage</span>
-                        <span className="text-sm">{Math.round((shelterData.currentOccupancy / shelterData.maxCapacity) * 100)}%</span>
+            <CardContent className="space-y-4">
+              {shelterData.length > 0 ? (
+                shelterData.map((shelter, index) => (
+                  <div key={index} className="p-4 border border-border rounded-lg bg-background">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h4 className="font-semibold text-foreground">{shelter.type || 'Shelter'}</h4>
+                        <p className="text-sm text-muted-foreground">{shelter.description || 'Shelter facility'}</p>
                       </div>
-                      <div className="w-full bg-background rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full"
-                          style={{ width: `${Math.min((shelterData.currentOccupancy / shelterData.maxCapacity) * 100, 100)}%` }}
-                        ></div>
+                      <Badge variant="outline">
+                        {shelter.status || 'Available'}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-1">
+                        <MapPin className="h-3 w-3" />
+                        <span>{shelter.location || 'Location not specified'}</span>
                       </div>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {shelterData.currentOccupancy} / {shelterData.maxCapacity} people
-                      </p>
+                      <div className="flex items-center gap-1">
+                        <Users className="h-3 w-3" />
+                        <span>{shelter.quantity || 'Capacity not specified'}</span>
+                      </div>
                     </div>
                   </div>
-
-                  <div>
-                    <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea
-                      id="notes"
-                      placeholder="Any special conditions or updates..."
-                      rows={3}
-                      value={shelterData.notes}
-                      onChange={(e) => setShelterData({...shelterData, notes: e.target.value})}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2">
-                <Button variant="outline">Cancel</Button>
-                <Button>
-                  <Edit className="h-4 w-4 mr-2" />
-                  Update Occupancy
-                </Button>
-              </div>
+                ))
+              ) : (
+                <p className="text-muted-foreground">No shelter information available.</p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
