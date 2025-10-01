@@ -72,9 +72,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
       }
     } catch (error) {
       toast({
-        title: "Network Error",
-        description: "Unable to connect to the server. Please try again later.",
-        variant: "destructive",
+        
       });
     }
   };
@@ -82,7 +80,7 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
   const userRoles = [
     'citizen',
     'volunteer',
-    'emergency_responder',
+    'organization',
     'medical_staff',
     'logistics_coordinator'
   ];

@@ -45,6 +45,11 @@ const Navbar = () => {
     { path: '/volunteer', label: 'Volunteer Dashboard', icon: Users },
     { path: '/dashboard', label: 'Dashboard', icon: Home },
     { path: '/report', label: 'Report Incident', icon: AlertTriangle },
+    { path: '/missing', label: 'Missing Persons', icon: Users },
+    { path: '/damage', label: 'Damage Report', icon: AlertTriangle },
+    { path: '/resources', label: 'Resources', icon: Package },
+    { path: '/support', label: 'Support', icon: Heart },
+    { path: '/donate', label: 'Donate', icon: DollarSign },
   ];
 
   const citizenNavItems = [

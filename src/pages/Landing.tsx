@@ -36,7 +36,7 @@ const Landing = () => {
               size="lg"
               variant="outline"
               asChild
-              className="h-12 px-8 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              className="h-12 px-8 border-primary-foreground text-primary hover:bg-primary hover:text-white"
             >
               <Link to="/report">
                 <AlertTriangle className="mr-2 h-5 w-5" />
@@ -47,7 +47,7 @@ const Landing = () => {
               size="lg"
               variant="outline"
               asChild
-              className="h-12 px-8 border-primary-foreground text-primary-foreground hover:bg-primary-foreground hover:text-primary"
+              className="h-12 px-8 border-primary-foreground text-primary hover:bg-primary hover:text-white"
             >
               <Link to="/donate">
                 <Heart className="mr-2 h-5 w-5" />

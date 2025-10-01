@@ -13,8 +13,7 @@ const DashboardHeader = () => {
         {/* Logo and Title */}
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-success rounded-lg"></div>
-            <h1 className="text-2xl font-bold text-foreground">Punjab Sewa</h1>
+            
           </div>
           <Badge variant="outline" className="border-success text-success">
             Active Response
